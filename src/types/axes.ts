@@ -5,6 +5,8 @@ export type axis = {
     to: number;
     step?: number;
     color?: THREE.ColorRepresentation;
+    label?: 'numeric' | Array<{ name: string, color: THREE.ColorRepresentation }>;
+    lblColor?: THREE.ColorRepresentation;
 };
 export type axes = {
     x?: axis,
