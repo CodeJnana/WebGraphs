@@ -37,14 +37,14 @@ export default class DrawAxis extends Draw {
         if (axisData) {
             return new DrawLine(
                 {
-                    x: (axisName === 'x') ? axisData.from - 0.5 : 0,
-                    y: (axisName === 'y') ? axisData.from - 0.5 : 0,
-                    z: (axisName === 'z') ? axisData.from - 0.5 : 0
+                    x: (axisName === 'x') ? axisData.from - 0.25 : 0,
+                    y: (axisName === 'y') ? axisData.from - 0.25 : 0,
+                    z: (axisName === 'z') ? axisData.from - 0.25 : 0
                 },
                 {
-                    x: (axisName === 'x') ? axisData.to + 0.5 : 0,
-                    y: (axisName === 'y') ? axisData.to + 0.5 : 0,
-                    z: (axisName === 'z') ? axisData.to + 0.5 : 0
+                    x: (axisName === 'x') ? axisData.to + 0.25 : 0,
+                    y: (axisName === 'y') ? axisData.to + 0.25 : 0,
+                    z: (axisName === 'z') ? axisData.to + 0.25 : 0
                 },
                 axisData.color ?? colors.axis
             ).build();
