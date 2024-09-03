@@ -1,5 +1,5 @@
-import * as THREE from 'three';
+import { Group } from "three";
 
-export default abstract class Draw {
-    abstract build(): THREE.Object3D | Array<THREE.Object3D>;
+export default class Draw {
+    public polytope: Group = new Group();
 }

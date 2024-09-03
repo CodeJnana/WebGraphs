@@ -1,6 +1,5 @@
-import { Color, ColorRepresentation, Mesh, MeshBasicMaterial, MeshPhongMaterial } from 'three';
+import { Color, ColorRepresentation, Group, Mesh, MeshBasicMaterial, MeshPhongMaterial } from 'three';
 import { TextGeometry } from "three/examples/jsm/Addons.js";
-import Draw from "../interface/Draw";
 import { colors } from './defaultColors';
 
 declare const window: any;
@@ -34,12 +33,12 @@ export class LabelMesh extends Mesh {
     }
 }
 
-export default class DrawLabel extends Draw {
+export default class Label extends Group {
     private lblGeometry: LabelGeometry;
     private lblMesh: LabelMesh;
 
     constructor(
-        private position: textPosition,
+        private labelPosition: textPosition,
         private text: string,
         private textSize: number = 0.15,
         private color: ColorRepresentation = colors.text,
@@ -50,13 +49,10 @@ export default class DrawLabel extends Draw {
         this.lblGeometry = new LabelGeometry(this.text, this.textSize);
         this.lblMesh = new LabelMesh(this.lblGeometry, this.material, this.position);
         this.lblMesh.position.set(
-            this.position.x,
-            this.position.y,
-            this.position.z
+            this.labelPosition.x,
+            this.labelPosition.y,
+            this.labelPosition.z
         );
-    }
-
-    render() {
-        return this.lblMesh;
+        this.add(this.lblMesh);
     }
 }

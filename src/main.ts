@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { FontLoader, OrbitControls } from 'three/examples/jsm/Addons.js';
 import DrawAxis from './graph/axis';
+import Bar from './graph/bar';
 import './style.css';
 
 declare const window: any;
@@ -10,27 +11,29 @@ declare const window: any;
 
 
   const canvas = document.createElement('canvas');
+  canvas.width = 1200;
+  canvas.height = 600;
   document.getElementById('app')?.appendChild(canvas);
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: true,
+    precision: 'highp',
   });
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(canvas.width, canvas.height);
 
-  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 500);
+  const camera = new THREE.PerspectiveCamera(45, 2, 1, 500);
   const controls = new OrbitControls(camera, renderer.domElement);
-
-  //controls.update() must be called after any manual changes to the camera's transform
-  camera.position.set(0, 10, 50);
+  // look at centre of the graph
+  controls.target.set(5, 5, 0);
+  // set camera position
+  camera.position.set(5, 5, 15);
   controls.update();
-  // camera.position.set(0, 0, 50);
-  camera.lookAt(0, 0, 0);
 
   const scene = new THREE.Scene();
 
   const dAxes = new DrawAxis({
     x: {
-      from: -10,
+      from: 0,
       to: 10,
       step: 2,
       label: [
@@ -47,38 +50,29 @@ declare const window: any;
       ]
     },
     y: {
-      from: -10,
+      from: 0,
       to: 10,
       step: 2,
-      label: 'numeric'
+      label: 'numeric',
+      lblColor: 0xd3d3d3
     },
     z: {
-      from: -10,
+      from: 0,
       to: 10,
       step: 2,
-      label: 'numeric'
+      label: 'numeric',
+      lblColor: 0xd3d3d3
     }
   });
-  scene.add(dAxes.build());
+  scene.add(dAxes);
 
-  // const bar = drawBar({
-  //   width: 1,
-  //   height: 5,
-  //   depth: 1,
-  //   position: { x: 1.7, y: 2.5, z: 0 },
-  //   animate: true,
-  // }, scene);
 
-  // const bar2 = drawBar({
-  //   width: 1,
-  //   height: 5,
-  //   depth: 1,
-  //   position: { x: -1.7, y: 2.5, z: 0 },
-  //   color: 0xff0000,
-  //   animate: true,
-  // }, scene);
+  const bar = new Bar({ width: 1, height: 10, depth: 1 }, { x: 2, y: 0, z: 0 }, 0xff0000, true);
+  scene.add(bar);
+  // scene.remove(bar.drawing);
 
   scene.background = new THREE.Color(0xffffff);
+  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.render(scene, camera);
 
   // draw a sphere
@@ -89,22 +83,16 @@ declare const window: any;
   // scene.add(sphere);
 
   // lights
-  const light = new THREE.DirectionalLight(0xffffff, 3);
+  const light = new THREE.AmbientLight(0xffffff, 3);
   light.position.set(0, 5, 5);
   scene.add(light);
-
   function animate() {
-
     requestAnimationFrame(animate);
-    // bar();
-    // bar2();
-
     // sphere.rotateY(0.01);
     // required if controls.enableDamping or controls.autoRotate are set to true
+    bar.rotate();
     controls.update();
-
     renderer.render(scene, camera);
-
   }
   animate();
 });
