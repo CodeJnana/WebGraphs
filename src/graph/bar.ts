@@ -41,7 +41,9 @@ export default class Bar extends Group {
         private barPosition: { x: number, y: number, z: number },
         private color: ColorRepresentation = colors.bar,
         private borders: boolean = false,
-        private barMaterial: MeshPhongMaterial | MeshBasicMaterial = new MeshPhongMaterial({ shininess: 150 }),
+        private borderColor: ColorRepresentation = colors.barBorder,
+        private borderThickness: number = 2,
+        private barMaterial: MeshPhongMaterial | MeshBasicMaterial = new MeshPhongMaterial({ shininess: 150, transparent: true, opacity: 0.2 }),
     ) {
         super();
         this.barMaterial.color = new Color(this.color);
@@ -54,9 +56,9 @@ export default class Bar extends Group {
         this.add(...objects);
     }
 
-    drawBorder() {
+    drawBorder(): LineSegments {
         const geometry = new EdgesGeometry(this.barGeometry);
-        const material = new LineBasicMaterial({ color: 0x00000, linewidth: 2 });
+        const material = new LineBasicMaterial({ color: this.borderColor, linewidth: this.borderThickness });
         this.barBorderMesh.geometry = geometry;
         this.barBorderMesh.material = material;
         this.barBorderMesh.position.set(this.barPosition.x, this.barPosition.y, this.barPosition.z);
@@ -77,7 +79,7 @@ export default class Bar extends Group {
         }
     }
 
-    scaleHeight(speed: number = this.dimensions.height / 100): boolean {
+    scaleHeight(speed: number = this.dimensions.height / 10): boolean {
         if (this.growthHeight < this.dimensions.height) {
             this.barMesh.geometry = new BarGeometry({ width: this.dimensions.width, height: this.growthHeight, depth: this.dimensions.depth });
             this.growthHeight += speed;

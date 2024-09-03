@@ -9,6 +9,7 @@ export type axis = {
     step?: number;
     color?: ColorRepresentation;
     label?: 'numeric' | Array<{ name: string, color: ColorRepresentation }>;
+    labelCenter?: boolean;
     lblColor?: ColorRepresentation;
 };
 export type axes = {
@@ -24,8 +25,7 @@ export default class Axis extends Group {
         super();
         for (const axis of Object.keys(this.axes) as Array<'x' | 'y' | 'z'>) {
             if (this.outline) {
-                const drawOutline = this.calculateOutlines(this.axes);
-                drawOutline && this.add(drawOutline);
+                this.calculateOutlines(this.axes);
             }
             this.drawAxis(axis);
             this.drawStep(axis);
@@ -57,9 +57,8 @@ export default class Axis extends Group {
     drawStep(axisName: 'x' | 'y' | 'z'): Object3D | void {
         const axisData = this.axes[axisName] as axis;
         if (axisData && axisData.step !== undefined) {
-            const objects: Object3D[] = [];
             for (let i = axisData.from; i <= axisData.to; i += axisData.step) {
-                objects.push(new DrawLine(
+                this.add(new DrawLine(
                     {
                         x: axisName === 'x' ? i : (axisName === 'y' ? 0.1 : 0),
                         y: axisName === 'y' ? i : (axisName === 'x' ? 0.1 : (axisName === 'z' ? 0.1 : 0)),
@@ -73,14 +72,12 @@ export default class Axis extends Group {
                     axisData.color ?? colors.axis
                 ));
             }
-            this.add(...objects);
         }
     }
 
     drawLabel(axisName: 'x' | 'y' | 'z'): Object3D | void {
         const axisData = this.axes[axisName] as axis;
         if (axisData.label && axisData.step) {
-            const objects: Object3D[] = [];
             let lblCount = 0;
             for (let i = axisData.from; i <= axisData.to; i += axisData.step) {
                 if (i !== 0) {
@@ -94,10 +91,13 @@ export default class Axis extends Group {
 
                     const dimensions = new Box3().setFromObject(text).getSize(new Vector3());
                     if (axisName === 'x') {
-                        if (i > 0)
-                            text.position.set(i - dimensions.x / 2, -0.4, 0);
-                        else
-                            text.position.set(i - dimensions.x / 2 - 0.05, -0.4, 0);
+                        if (i > 0) {
+                            const xPosition = !axisData.labelCenter ? i - dimensions.x / 2 : i - axisData.step / 2 - dimensions.x / 2;
+                            text.position.set(xPosition, -0.4, 0);
+                        } else {
+                            const xPosition = !axisData.labelCenter ? (i - dimensions.x / 2) : i + axisData.step / 2 - dimensions.x / 2;
+                            text.position.set(xPosition - 0.05, -0.4, 0);
+                        }
                     }
                     if (axisName === 'y') {
                         text.position.set(-dimensions.x - 0.2, i - 0.1, 0);
@@ -109,11 +109,10 @@ export default class Axis extends Group {
                             text.position.set(0, -0.5, i + (dimensions.x / 2) + 0.05);
                         text.rotateY(Math.PI / 2);
                     }
-                    objects.push(text);
+                    this.add(text);
                     lblCount++;
                 }
             }
-            return this.add(...objects);
         }
     }
 
@@ -127,11 +126,10 @@ export default class Axis extends Group {
             axisData: axis
         }>): Object3D | void {
         if (axis.axisData.step) {
-            const objects: Object3D[] = [];
             for (let i = axis.axisData.from; i <= axis.axisData.to; i += axis.axisData.step) {
                 axes.forEach((object) => {
                     if (i !== 0) {
-                        objects.push(new DrawLine(
+                        this.add(new DrawLine(
                             {
                                 x: (object.name === 'x') ? object.axisData.from : (axis.name === 'x' ? i : 0),
                                 y: (object.name === 'y') ? object.axisData.from : (axis.name === 'y' ? i : 0),
@@ -147,13 +145,11 @@ export default class Axis extends Group {
                     }
                 });
             }
-            return this.add(...objects);
         }
     }
 
     calculateOutlines(axis: axes): Object3D | void {
         const axisNames = Object.keys(axis) as Array<'x' | 'y' | 'z'>;
-        const objects: Object3D[] = [];
         for (const axisName of axisNames) {
             const axisData = axis[axisName] as axis;
             if (axisData && axisData.step) {
@@ -167,9 +163,8 @@ export default class Axis extends Group {
                 }).filter((axis) => axis !== undefined);
                 const outline = this.drawOutline({ name: axisName, axisData }, axes as any);
                 if (outline)
-                    objects.push(outline);
+                    this.add(outline);
             }
         }
-        return this.add(...objects);
     }
 }
