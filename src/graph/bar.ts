@@ -1,4 +1,4 @@
-import { BoxGeometry, Color, ColorRepresentation, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Material, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D } from 'three';
+import { BoxGeometry, Color, ColorRepresentation, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D } from 'three';
 import Draw from '../interface/Draw';
 import { colors } from './defaultColors';
 
@@ -17,7 +17,7 @@ export class BarGeometry extends BoxGeometry {
 export class BarMesh extends Mesh {
     constructor(
         barGeometry: BarGeometry,
-        mesh: Material,
+        mesh: MeshBasicMaterial | MeshPhongMaterial,
         position: { x: number, y: number, z: number }
     ) {
         super(barGeometry, mesh);
@@ -41,12 +41,10 @@ export default class DrawBar extends Draw {
         },
         private position: { x: number, y: number, z: number },
         private color: ColorRepresentation = colors.bar,
-        private barMaterial?: MeshPhongMaterial | MeshBasicMaterial
+        private barMaterial: MeshPhongMaterial | MeshBasicMaterial = new MeshPhongMaterial({ shininess: 150 })
     ) {
         super();
-        if (!this.barMaterial) {
-            this.barMaterial = new MeshPhongMaterial({ color: new Color(this.color), shininess: 150 });
-        }
+        this.barMaterial.color = new Color(this.color);
         this.barGeometry = new BarGeometry(this.dimensions);
         this.barMesh = new BarMesh(this.barGeometry, this.barMaterial, this.position);
     }
@@ -79,7 +77,7 @@ export default class DrawBar extends Draw {
         }
     }
 
-    grow(): boolean {
+    scaleHeight(): boolean {
         if (this.growthHeight < this.dimensions.height) {
             this.barMesh.geometry = new BarGeometry({ width: this.dimensions.width, height: this.growthHeight, depth: this.dimensions.depth });
             this.growthHeight += this.dimensions.height / 100;
