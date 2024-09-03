@@ -29,6 +29,9 @@ export class BarMesh extends Mesh {
 export default class DrawBar extends Draw {
     private barGeometry: BarGeometry;
     private barMesh: BarMesh;
+    private barBorderMesh: LineSegments = new LineSegments();
+
+    private growthHeight: number = 0;
 
     constructor(
         private dimensions: {
@@ -51,22 +54,39 @@ export default class DrawBar extends Draw {
     render(borders: boolean = false): Object3D {
         const objects: Object3D[] = [];
         if (borders) {
-            objects.push(this.generateBorder());
+            objects.push(this.border());
         }
         objects.push(this.barMesh);
         return new Group().add(...objects);
     }
 
-    generateBorder() {
-        var geometry = new EdgesGeometry(this.barGeometry);
+    border() {
+        const geometry = new EdgesGeometry(this.barGeometry);
+        const material = new LineBasicMaterial({ color: 0x00000, linewidth: 2 });
+        this.barBorderMesh.geometry = geometry;
+        this.barBorderMesh.material = material;
+        this.barBorderMesh.position.set(this.position.x, this.position.y, this.position.z);
+        return this.barBorderMesh;
+    }
 
-        var material = new LineBasicMaterial({ color: 0x00000, linewidth: 2 });
+    rotateY(clockwise: boolean = true) {
+        if (clockwise) {
+            this.barBorderMesh.rotation.y += 0.01;
+            this.barMesh.rotation.y += 0.01;
+        } else {
+            this.barBorderMesh.rotation.y -= 0.01;
+            this.barMesh.rotation.y -= 0.01;
+        }
+    }
 
-        const edges = new LineSegments(
-            geometry,
-            material,
-        );
-        edges.position.set(this.position.x, this.position.y, this.position.z);
-        return edges;
+    grow(): boolean {
+        if (this.growthHeight < this.dimensions.height) {
+            this.barMesh.geometry = new BarGeometry({ width: this.dimensions.width, height: this.growthHeight, depth: this.dimensions.depth });
+            this.growthHeight += this.dimensions.height / 100;
+            const geometry = new EdgesGeometry(this.barMesh.geometry);
+            this.barBorderMesh.geometry = geometry;
+            return false;
+        }
+        return true;
     }
 }
