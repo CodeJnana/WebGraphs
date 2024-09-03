@@ -1,45 +1,72 @@
-import * as THREE from 'three';
+import { BoxGeometry, Color, ColorRepresentation, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Material, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D } from 'three';
+import Draw from '../interface/Draw';
 import { colors } from './defaultColors';
 
-type bar = {
-    width: number;
-    height: number;
-    depth: number;
-    color?: THREE.ColorRepresentation;
-    position: { x: number, y: number, z: number };
-    animate?: boolean;
-};
+export class BarGeometry extends BoxGeometry {
+    constructor(private bar: {
+        width: number;
+        height: number;
+        depth: number;
+    }) {
+        super(bar.width, bar.height, bar.depth);
+        this.translate(0, this.bar.height / 2, 0); // should always start drawing from bottom center
+        return this;
+    }
+}
 
-let barHeight = 0;
-let positionY = 0;
+export class BarMesh extends Mesh {
+    constructor(
+        barGeometry: BarGeometry,
+        mesh: Material,
+        position: { x: number, y: number, z: number }
+    ) {
+        super(barGeometry, mesh);
+        this.position.set(position.x, position.y, position.z);
+        return this;
+    }
+}
 
-export function drawBar(bar: bar, scene: THREE.Scene): () => void {
-    const geometry = new THREE.BoxGeometry(bar.width, barHeight, bar.depth);
-    const material = new THREE.MeshPhongMaterial({
-        color: bar.color ?? colors.bar, shininess: 150, flatShading: true,
-        opacity: 0.5, transparent: true
-    });
-    let barMesh = new THREE.Mesh(geometry, material);
-    barMesh.position.set(bar.position.x, bar.position.y, bar.position.z);
-    scene.add(barMesh);
-    return () => {
-        if (!bar.animate) {
-            barMesh.geometry.dispose();
-            barMesh.geometry = new THREE.BoxGeometry(bar.width, bar.height, bar.depth);
-            if (barMesh.rotation.y === 0) {
-                barMesh.rotateY(Math.PI / 4);
-            }
-            return;
+export default class DrawBar extends Draw {
+    private barGeometry: BarGeometry;
+    private barMesh: BarMesh;
+
+    constructor(
+        private dimensions: {
+            width: number;
+            height: number;
+            depth: number;
+        },
+        private position: { x: number, y: number, z: number },
+        private color: ColorRepresentation = colors.bar,
+        private barMaterial?: MeshPhongMaterial | MeshBasicMaterial
+    ) {
+        super();
+        if (!this.barMaterial) {
+            this.barMaterial = new MeshPhongMaterial({ color: new Color(this.color), shininess: 150 });
         }
-        if (barHeight <= bar.height) {
-            barHeight += 0.1;
-            barMesh.geometry.dispose();
-            barMesh.geometry = new THREE.BoxGeometry(bar.width, barHeight, bar.depth);
+        this.barGeometry = new BarGeometry(this.dimensions);
+        this.barMesh = new BarMesh(this.barGeometry, this.barMaterial, this.position);
+    }
+
+    render(borders: boolean = false): Object3D {
+        const objects: Object3D[] = [];
+        if (borders) {
+            objects.push(this.generateBorder());
         }
-        if (positionY < bar.position.y) {
-            positionY += 0.1 / 2;
-            barMesh.position.set(bar.position.x, positionY, bar.position.z);
-        }
-        barMesh.rotateY(0.01);
-    };
+        objects.push(this.barMesh);
+        return new Group().add(...objects);
+    }
+
+    generateBorder() {
+        var geometry = new EdgesGeometry(this.barGeometry);
+
+        var material = new LineBasicMaterial({ color: 0x00000, linewidth: 2 });
+
+        const edges = new LineSegments(
+            geometry,
+            material,
+        );
+        edges.position.set(this.position.x, this.position.y, this.position.z);
+        return edges;
+    }
 }
