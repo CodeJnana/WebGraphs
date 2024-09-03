@@ -25,7 +25,7 @@ export class BarMesh extends Mesh {
     }
 }
 
-export default class Bar extends Group {
+export default class Bar extends Object3D {
     private barGeometry: BarGeometry;
     public barMesh: BarMesh;
     private barBorderMesh: LineSegments = new LineSegments();

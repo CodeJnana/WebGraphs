@@ -1,6 +1,6 @@
-import { Color, ColorRepresentation, Group, Mesh, MeshBasicMaterial, MeshPhongMaterial } from 'three';
+import { Color, ColorRepresentation, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Vector3 } from 'three';
 import { TextGeometry } from "three/examples/jsm/Addons.js";
-import { colors } from './defaultColors';
+import { colors } from '../graph/defaultColors';
 
 declare const window: any;
 
@@ -33,25 +33,26 @@ export class LabelMesh extends Mesh {
     }
 }
 
-export default class Label extends Group {
+export default class Label extends Object3D {
     private lblGeometry: LabelGeometry;
     private lblMesh: LabelMesh;
 
     constructor(
-        private labelPosition: textPosition,
+        position: Vector3,
         private text: string,
         private textSize: number = 0.15,
         private color: ColorRepresentation = colors.text,
         private material: MeshBasicMaterial | MeshPhongMaterial = new MeshBasicMaterial(),
     ) {
         super();
+        this.position.set(position.x, position.y, position.z);
         this.material.color = new Color(this.color);
         this.lblGeometry = new LabelGeometry(this.text, this.textSize);
         this.lblMesh = new LabelMesh(this.lblGeometry, this.material, this.position);
         this.lblMesh.position.set(
-            this.labelPosition.x,
-            this.labelPosition.y,
-            this.labelPosition.z
+            this.position.x,
+            this.position.y,
+            this.position.z
         );
         this.add(this.lblMesh);
     }

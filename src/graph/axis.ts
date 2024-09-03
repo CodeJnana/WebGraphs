@@ -1,6 +1,6 @@
 import { Box3, Color, ColorRepresentation, Group, Object3D, Vector3 } from 'three';
 import { colors } from './defaultColors';
-import DrawLabel from './label';
+import DrawLabel from '../objects/label';
 import { default as DrawLine, default as Line } from './line';
 
 export type axis = {
@@ -82,9 +82,10 @@ export default class Axis extends Group {
             for (let i = axisData.from; i <= axisData.to; i += axisData.step) {
                 if (i !== 0) {
                     const color = new Color(axisData.label === 'numeric' ? (axisData.lblColor ?? colors.text) : (axisData.label[lblCount]?.color ?? colors.text));
+                    let label = axisData.label === 'numeric' ? i.toString() : (axisData.label[lblCount]?.name ?? '');
                     const text = new DrawLabel(
-                        { x: 0, y: 0, z: 0 },
-                        axisData.label === 'numeric' ? i.toString() : (axisData.label[lblCount]?.name ?? ''),
+                        new Vector3(0, 0, 0),
+                        label,
                         0.15,
                         color,
                     );
