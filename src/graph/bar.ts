@@ -81,6 +81,9 @@ export default class DrawBar extends Draw {
         if (this.growthHeight < this.dimensions.height) {
             this.barMesh.geometry = new BarGeometry({ width: this.dimensions.width, height: this.growthHeight, depth: this.dimensions.depth });
             this.growthHeight += this.dimensions.height / 100;
+            if (this.growthHeight > this.dimensions.height) {
+                this.growthHeight = this.dimensions.height;
+            }
             const geometry = new EdgesGeometry(this.barMesh.geometry);
             this.barBorderMesh.geometry = geometry;
             return false;
