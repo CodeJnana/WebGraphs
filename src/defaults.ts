@@ -1,8 +1,28 @@
 export const colors = {
-    "axis": 0x808080,
-    "plot": 0xd3d3d3,
-    "bar": 0x0000ff,
-    'barBorder': 0x000000,
-    'text': 0xd3d3d3,
-    'line': 0x0000ff
+    "axis": {
+        "light": 0x808080,
+        "dark": 0x808080
+    },
+    "plot": {
+        "light": 0xd3d3d3,
+        "dark": 0xd3d3d3
+    },
+    "bar": {
+        "light": 0x0000ff,
+        "dark": 0x0000ff
+    },
+    'barBorder': {
+        'light': 0x000000,
+        'dark': 0x000000
+    },
+    'text': {
+        'light': 0xd3d3d3,
+        'dark': 0xd3d3d3
+    },
+    'line': {
+        'light': 0x0000ff,
+        'dark': 0x0000ff
+    },
 }
+
+

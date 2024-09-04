@@ -4,6 +4,7 @@ import DrawAxis from './objects/Axis';
 import Bar from './objects/Bar';
 import './style.css';
 import BarGraph from './graph/BarGraph';
+import { Color } from './objects/colors/Color';
 
 declare const window: any;
 (new FontLoader()).load('https://threejsfundamentals.org/threejs/resources/threejs/fonts/helvetiker_regular.typeface.json', function (f) {

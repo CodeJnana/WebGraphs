@@ -1,7 +1,7 @@
 import { Box3, Color, ColorRepresentation, Object3D, Vector3 } from 'three';
-import { colors } from '../defaults';
 import Label from './Label';
 import Line from './Line';
+import { Colors } from './colors/Color';
 
 export type axis = {
     from: number;
@@ -23,7 +23,7 @@ export class Axis extends Object3D {
         public name: 'x' | 'y' | 'z',
         from: number,
         to: number,
-        color: ColorRepresentation = colors.axis
+        color: ColorRepresentation = Colors.axis
     ) {
         super();
         this.add(new Line(
@@ -36,8 +36,8 @@ export class Axis extends Object3D {
                 (name === 'x') ? to : 0,
                 (name === 'y') ? to : 0,
                 (name === 'z') ? to : 0
-            )
-            , color)
+            ),
+            color)
         );
     }
 }
@@ -52,20 +52,23 @@ export default class Graph extends Object3D {
             if (this.outline) {
                 this.calculateOutlines(this.axes);
             }
-            this.drawAxis(axis);
             this.drawStep(axis);
             this.drawLabel(axis);
         }
+
+        this.drawAxis();
     }
 
-    drawAxis(axisName: 'x' | 'y' | 'z'): Object3D | void {
-        const axisData = this.axes[axisName] as axis;
-        axisData && this.add(new Axis(
-            axisName,
-            axisData.from,
-            axisData.to,
-            axisData.color ?? colors.axis
-        ));
+    drawAxis(): void {
+        for (const axis of Object.keys(this.axes) as Array<'x' | 'y' | 'z'>) {
+            const axisData = this.axes[axis] as axis;
+            axisData && this.add(new Axis(
+                axis,
+                axisData.from,
+                axisData.to,
+                axisData.color ?? Colors.axis
+            ));
+        }
     }
 
     drawStep(axisName: 'x' | 'y' | 'z'): Object3D | void {
@@ -83,7 +86,7 @@ export default class Graph extends Object3D {
                         axisName === 'y' ? i : (axisName === 'x' ? -0.1 : (axisName === 'z' ? -0.1 : 0)),
                         axisName === 'z' ? i : 0
                     ),
-                    axisData.color ?? colors.axis
+                    axisData.color ?? Colors.axis
                 ));
             }
         }
@@ -95,7 +98,7 @@ export default class Graph extends Object3D {
             let lblCount = 0;
             for (let i = axisData.from; i <= axisData.to; i += axisData.step) {
                 if (i !== 0) {
-                    const color = new Color(axisData.label === 'numeric' ? (axisData.lblColor ?? colors.text) : (axisData.label[lblCount]?.color ?? colors.text));
+                    const color = new Color(axisData.label === 'numeric' ? (axisData.lblColor ?? Colors.text) : (axisData.label[lblCount]?.color ?? Colors.text));
                     let label = axisData.label === 'numeric' ? i.toString() : (axisData.label[lblCount]?.name ?? '');
                     const text = new Label(
                         new Vector3(0, 0, 0),
@@ -155,7 +158,7 @@ export default class Graph extends Object3D {
                                 (object.name === 'y') ? object.axisData.to : (axis.name === 'y' ? i : 0),
                                 (object.name === 'z') ? object.axisData.to : (axis.name === 'z' ? i : 0),
                             ),
-                            object.axisData.color ?? colors.plot
+                            object.axisData.color ?? Colors.plot
                         ));
                     }
                 });
@@ -163,7 +166,7 @@ export default class Graph extends Object3D {
         }
     }
 
-    calculateOutlines(axis: axes): Object3D | void {
+    calculateOutlines(axis: axes): void {
         const axisNames = Object.keys(axis) as Array<'x' | 'y' | 'z'>;
         for (const axisName of axisNames) {
             const axisData = axis[axisName] as axis;

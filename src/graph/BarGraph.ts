@@ -1,7 +1,7 @@
 import { Group, Scene, Vector3 } from "three";
-import { colors } from "../defaults";
 import Axis from "../objects/Axis";
 import Bar from "../objects/Bar";
+import { Colors } from "../objects/colors/Color";
 
 export type BarGraphOptions = {
     labels?: string[];
@@ -71,7 +71,7 @@ export default class BarGraph extends Group {
                 from: 0,
                 to: this.options.labels?.length ?? 0,
                 step: 1,
-                label: this.options.labels?.map(label => ({ name: label, color: colors.axis })) ?? [],
+                label: this.options.labels?.map(label => ({ name: label, color: Colors.axis })) ?? [],
                 labelCenter: true
             },
             y: {

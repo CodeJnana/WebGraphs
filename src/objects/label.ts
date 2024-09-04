@@ -1,6 +1,6 @@
 import { Color, ColorRepresentation, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Vector3 } from 'three';
 import { TextGeometry } from "three/examples/jsm/Addons.js";
-import { colors } from '../defaults';
+import { Colors } from './colors/Color';
 
 declare const window: any;
 
@@ -41,7 +41,7 @@ export default class Label extends Object3D {
         position: Vector3,
         private text: string,
         private textSize: number = 0.15,
-        private color: ColorRepresentation = colors.text,
+        private color: ColorRepresentation = Colors.text,
         private material: MeshBasicMaterial | MeshPhongMaterial = new MeshBasicMaterial(),
     ) {
         super();

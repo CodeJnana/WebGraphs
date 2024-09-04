@@ -1,5 +1,5 @@
-import { BoxGeometry, Color, ColorRepresentation, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Vector3 } from 'three';
-import { colors } from '../defaults';
+import { BoxGeometry, Color, ColorRepresentation, EdgesGeometry, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Vector3 } from 'three';
+import { Colors } from './colors/Color';
 
 export class BarGeometry extends BoxGeometry {
     constructor(private bar: {
@@ -39,9 +39,9 @@ export default class Bar extends Object3D {
             depth: number;
         },
         position: Vector3,
-        private color: ColorRepresentation = colors.bar,
+        private color: ColorRepresentation = Colors.bar,
         private borders: boolean = false,
-        private borderColor: ColorRepresentation = colors.barBorder,
+        private borderColor: ColorRepresentation = Colors.barBorder,
         private borderThickness: number = 2,
         private barMaterial: MeshPhongMaterial | MeshBasicMaterial = new MeshPhongMaterial({ shininess: 150, transparent: true, opacity: 0.2 }),
     ) {
