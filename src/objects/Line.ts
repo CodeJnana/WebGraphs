@@ -1,5 +1,5 @@
-import { BufferGeometry, Color, ColorRepresentation, Group, LineBasicMaterial, Line as ThreeLine, Vector3 } from 'three';
-import { colors } from './defaultColors';
+import { BufferGeometry, Color, ColorRepresentation, LineBasicMaterial, Object3D, Line as ThreeLine, Vector3 } from 'three';
+import { colors } from '../defaults';
 
 export class LineGeometry extends BufferGeometry {
     constructor(
@@ -33,7 +33,7 @@ export class LineMesh extends ThreeLine {
     }
 }
 
-export default class Line extends Group {
+export default class Line extends Object3D {
     private lineGeometry: LineGeometry;
     private lineMesh: LineMesh;
 

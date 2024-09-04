@@ -1,6 +1,6 @@
 import { Color, ColorRepresentation, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Vector3 } from 'three';
 import { TextGeometry } from "three/examples/jsm/Addons.js";
-import { colors } from '../graph/defaultColors';
+import { colors } from '../defaults';
 
 declare const window: any;
 

@@ -1,7 +1,7 @@
-import { Box3, Color, ColorRepresentation, Group, Object3D, Vector3 } from 'three';
-import { colors } from './defaultColors';
-import DrawLabel from '../objects/label';
-import { default as DrawLine, default as Line } from './line';
+import { Box3, Color, ColorRepresentation, Object3D, Vector3 } from 'three';
+import { colors } from '../defaults';
+import Line from './line';
+import Label from './label';
 
 export type axis = {
     from: number;
@@ -17,7 +17,7 @@ export type axes = {
     y?: axis,
     z?: axis
 };
-export default class Axis extends Group {
+export default class Axis extends Object3D {
     constructor(
         private axes: axes,
         private outline: boolean = false
@@ -58,7 +58,7 @@ export default class Axis extends Group {
         const axisData = this.axes[axisName] as axis;
         if (axisData && axisData.step !== undefined) {
             for (let i = axisData.from; i <= axisData.to; i += axisData.step) {
-                this.add(new DrawLine(
+                this.add(new Line(
                     {
                         x: axisName === 'x' ? i : (axisName === 'y' ? 0.1 : 0),
                         y: axisName === 'y' ? i : (axisName === 'x' ? 0.1 : (axisName === 'z' ? 0.1 : 0)),
@@ -83,7 +83,7 @@ export default class Axis extends Group {
                 if (i !== 0) {
                     const color = new Color(axisData.label === 'numeric' ? (axisData.lblColor ?? colors.text) : (axisData.label[lblCount]?.color ?? colors.text));
                     let label = axisData.label === 'numeric' ? i.toString() : (axisData.label[lblCount]?.name ?? '');
-                    const text = new DrawLabel(
+                    const text = new Label(
                         new Vector3(0, 0, 0),
                         label,
                         0.15,
@@ -130,7 +130,7 @@ export default class Axis extends Group {
             for (let i = axis.axisData.from; i <= axis.axisData.to; i += axis.axisData.step) {
                 axes.forEach((object) => {
                     if (i !== 0) {
-                        this.add(new DrawLine(
+                        this.add(new Line(
                             {
                                 x: (object.name === 'x') ? object.axisData.from : (axis.name === 'x' ? i : 0),
                                 y: (object.name === 'y') ? object.axisData.from : (axis.name === 'y' ? i : 0),

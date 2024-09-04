@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { FontLoader, OrbitControls } from 'three/examples/jsm/Addons.js';
-import DrawAxis from './graph/axis';
-import Bar from './graph/bar';
+import DrawAxis from './objects/Axis';
+import Bar from './objects/Bar';
 import './style.css';
 import BarGraph from './graph/BarGraph';
 
@@ -25,9 +25,9 @@ declare const window: any;
   const camera = new THREE.PerspectiveCamera(45, 2, 1, 500);
   const controls = new OrbitControls(camera, renderer.domElement);
   // look at centre of the graph
-  controls.target.set(5, 5, 0);
+  controls.target.set(10, 5, 0);
   // set camera position
-  camera.position.set(5, 5, 15);
+  camera.position.set(10, 5, 15);
   controls.update();
 
   const scene = new THREE.Scene();
@@ -60,32 +60,32 @@ declare const window: any;
   };
   const barGraph = new BarGraph(data, scene);
 
-  const dAxes = new DrawAxis({
-    x: {
-      from: 0,
-      to: 10,
-      step: 2,
-      label: [
-        { name: 'New York', color: 0xff0000 },
-        { name: 'Moscow', color: 0x00ff00 },
-        { name: 'London', color: 0x0000ff },
-        { name: 'Paris', color: 0xffff00 },
-        { name: 'Berlin', color: 0x00ffff },
-        { name: 'Tokyo', color: 0xff00ff },
-        { name: 'Beijing', color: 0x000000 },
-        { name: 'Sydney', color: 0xdedede },
-        { name: 'Cairo', color: 0x808080 },
-        { name: 'Rio de Janeiro', color: 0x800000 }
-      ],
-      labelCenter: true,
-    },
-    y: {
-      from: 0,
-      to: 10,
-      step: 2,
-      label: 'numeric',
-      lblColor: 0xd3d3d3
-    },
+  // const dAxes = new DrawAxis({
+  //   x: {
+  //     from: 0,
+  //     to: 20,
+  //     step: 2,
+  //     label: [
+  //       { name: 'New York', color: 0xff0000 },
+  //       { name: 'Moscow', color: 0x00ff00 },
+  //       { name: 'London', color: 0x0000ff },
+  //       { name: 'Paris', color: 0xffff00 },
+  //       { name: 'Berlin', color: 0x00ffff },
+  //       { name: 'Tokyo', color: 0xff00ff },
+  //       { name: 'Beijing', color: 0x000000 },
+  //       { name: 'Sydney', color: 0xdedede },
+  //       { name: 'Cairo', color: 0x808080 },
+  //       { name: 'Rio de Janeiro', color: 0x800000 }
+  //     ],
+  //     labelCenter: true,
+  //   },
+  //   y: {
+  //     from: 0,
+  //     to: 10,
+  //     step: 2,
+  //     label: 'numeric',
+  //     lblColor: 0xd3d3d3
+  //   },
     // z: {
     //   from: 0,
     //   to: 10,
@@ -104,13 +104,15 @@ declare const window: any;
     //   ],
     //   lblColor: 0xd3d3d3,
     // }
-  }, true);
-  scene.add(dAxes);
+  // }, true);
+  // scene.add(dAxes);
 
 
-  const bar = new Bar({ width: 1.5, height: 10, depth: 0 }, { x: 1, y: 0, z: 0 }, 'rgba(255, 99, 132, 0.2)', true, 'rgb(255, 99, 132)', 1);
-  scene.add(bar);
-  // scene.remove(bar.drawing);
+  // const bar = new Bar({ width: 1.5, height: 10, depth: 0 }, { x: 1, y: 0, z: 0 }, 'rgba(255, 99, 132, 0.2)', true, 'rgb(255, 99, 132)', 1);
+  // scene.add(bar);
+  // const bar2 = new Bar({ width: 1.5, height: 10, depth: 0 }, { x: 3, y: 0, z: 0 }, 'rgba(255, 159, 64, 0.2)', true, 'rgb(255, 99, 132)', 1);
+  // scene.add(bar2);
+  // // scene.remove(bar.drawing);
 
   scene.background = new THREE.Color(0xffffff);
   renderer.setPixelRatio(window.devicePixelRatio);
@@ -132,31 +134,9 @@ declare const window: any;
     // sphere.rotateY(0.01);
     // required if controls.enableDamping or controls.autoRotate are set to true
     // bar.rotate();
-    bar.scaleHeight();
+    // bar.scaleHeight();
     controls.update();
     renderer.render(scene, camera);
-    console.log(toScreenPosition(canvas, bar, camera));
   }
   animate();
 });
-
-
-function toScreenPosition(canvas, obj, camera) {
-  var vector = new THREE.Vector3();
-
-  var widthHalf = 0.5 * canvas.width;
-  var heightHalf = 0.5 * canvas.height;
-
-  obj.updateMatrixWorld();
-  vector.setFromMatrixPosition(obj.matrixWorld);
-  vector.project(camera);
-
-  vector.x = (vector.x * widthHalf) + widthHalf;
-  vector.y = - (vector.y * heightHalf) + heightHalf;
-
-  return {
-    x: vector.x,
-    y: vector.y
-  };
-
-};
