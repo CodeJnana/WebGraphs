@@ -1,4 +1,4 @@
-import { Group, Scene } from "three";
+import { Group, Scene, Vector3 } from "three";
 import { colors } from "../defaults";
 import Axis from "../objects/Axis";
 import Bar from "../objects/Bar";
@@ -94,11 +94,11 @@ export default class BarGraph extends Group {
                     width: barWidth - barWidth * 0.2,
                     height: barHeight,
                     depth: 0
-                }, {
-                    x: j + barWidth / 2,
-                    y: 0,
-                    z: 0
-                }, dataset.backgroundColor[j], true, dataset.borderColor[j], dataset.borderWidth);
+                }, new Vector3(
+                    j + barWidth / 2,
+                    0,
+                    0
+                ), dataset.backgroundColor[j], true, dataset.borderColor[j], dataset.borderWidth);
                 this.scene.add(bar);
             }
         }

@@ -2,33 +2,14 @@ import { BufferGeometry, Color, ColorRepresentation, LineBasicMaterial, Object3D
 import { colors } from '../defaults';
 
 export class LineGeometry extends BufferGeometry {
-    constructor(
-        private from: { x: number, y: number, z: number },
-        private to: { x: number, y: number, z: number }
-    ) {
+    constructor(...points: Vector3[]) {
         super();
-        this.setFromPoints(
-            [
-                new Vector3(
-                    this.from.x,
-                    this.from.y,
-                    this.from.z
-                ),
-                new Vector3(
-                    this.to.x,
-                    this.to.y,
-                    this.to.z
-                )
-            ]
-        );
+        this.setFromPoints(points);
     }
 }
 
 export class LineMesh extends ThreeLine {
-    constructor(
-        lineGeometry: LineGeometry,
-        material: LineBasicMaterial
-    ) {
+    constructor(lineGeometry: LineGeometry, material: LineBasicMaterial) {
         super(lineGeometry, material);
     }
 }
@@ -38,9 +19,9 @@ export default class Line extends Object3D {
     private lineMesh: LineMesh;
 
     constructor(
-        private from: { x: number, y: number, z: number },
-        private to: { x: number, y: number, z: number },
-        private color: ColorRepresentation = colors.line,
+        private from: Vector3,
+        private to: Vector3,
+        private color: ColorRepresentation = new Color(colors.line),
         private material: LineBasicMaterial = new LineBasicMaterial()
     ) {
         super();

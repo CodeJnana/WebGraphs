@@ -1,4 +1,4 @@
-import { BoxGeometry, Color, ColorRepresentation, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D } from 'three';
+import { BoxGeometry, Color, ColorRepresentation, EdgesGeometry, Group, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Vector3 } from 'three';
 import { colors } from '../defaults';
 
 export class BarGeometry extends BoxGeometry {
@@ -38,7 +38,7 @@ export default class Bar extends Object3D {
             height: number;
             depth: number;
         },
-        private barPosition: { x: number, y: number, z: number },
+        position: Vector3,
         private color: ColorRepresentation = colors.bar,
         private borders: boolean = false,
         private borderColor: ColorRepresentation = colors.barBorder,
@@ -48,7 +48,7 @@ export default class Bar extends Object3D {
         super();
         this.barMaterial.color = new Color(this.color);
         this.barGeometry = new BarGeometry(this.dimensions);
-        this.barMesh = new BarMesh(this.barGeometry, this.barMaterial, this.barPosition);
+        this.barMesh = new BarMesh(this.barGeometry, this.barMaterial, position);
 
         const objects: Object3D[] = [];
         this.borders && objects.push(this.drawBorder());
@@ -61,7 +61,7 @@ export default class Bar extends Object3D {
         const material = new LineBasicMaterial({ color: this.borderColor, linewidth: this.borderThickness });
         this.barBorderMesh.geometry = geometry;
         this.barBorderMesh.material = material;
-        this.barBorderMesh.position.set(this.barPosition.x, this.barPosition.y, this.barPosition.z);
+        this.barBorderMesh.position.set(this.barMesh.position.x, this.barMesh.position.y, this.barMesh.position.z);
         return this.barBorderMesh;
     }
 

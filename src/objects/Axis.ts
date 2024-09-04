@@ -1,7 +1,7 @@
 import { Box3, Color, ColorRepresentation, Object3D, Vector3 } from 'three';
 import { colors } from '../defaults';
-import Line from './line';
-import Label from './label';
+import Label from './Label';
+import Line from './Line';
 
 export type axis = {
     from: number;
@@ -17,7 +17,32 @@ export type axes = {
     y?: axis,
     z?: axis
 };
-export default class Axis extends Object3D {
+
+export class Axis extends Object3D {
+    constructor(
+        public name: 'x' | 'y' | 'z',
+        from: number,
+        to: number,
+        color: ColorRepresentation = colors.axis
+    ) {
+        super();
+        this.add(new Line(
+            new Vector3(
+                (name === 'x') ? from : 0,
+                (name === 'y') ? from : 0,
+                (name === 'z') ? from : 0
+            ),
+            new Vector3(
+                (name === 'x') ? to : 0,
+                (name === 'y') ? to : 0,
+                (name === 'z') ? to : 0
+            )
+            , color)
+        );
+    }
+}
+
+export default class Graph extends Object3D {
     constructor(
         private axes: axes,
         private outline: boolean = false
@@ -35,23 +60,12 @@ export default class Axis extends Object3D {
 
     drawAxis(axisName: 'x' | 'y' | 'z'): Object3D | void {
         const axisData = this.axes[axisName] as axis;
-        if (axisData) {
-            this.add(
-                new Line(
-                    {
-                        x: (axisName === 'x') ? axisData.from - 0.25 : 0,
-                        y: (axisName === 'y') ? axisData.from - 0.25 : 0,
-                        z: (axisName === 'z') ? axisData.from - 0.25 : 0
-                    },
-                    {
-                        x: (axisName === 'x') ? axisData.to + 0.25 : 0,
-                        y: (axisName === 'y') ? axisData.to + 0.25 : 0,
-                        z: (axisName === 'z') ? axisData.to + 0.25 : 0
-                    },
-                    axisData.color ?? colors.axis
-                )
-            );
-        }
+        axisData && this.add(new Axis(
+            axisName,
+            axisData.from,
+            axisData.to,
+            axisData.color ?? colors.axis
+        ));
     }
 
     drawStep(axisName: 'x' | 'y' | 'z'): Object3D | void {
@@ -59,16 +73,16 @@ export default class Axis extends Object3D {
         if (axisData && axisData.step !== undefined) {
             for (let i = axisData.from; i <= axisData.to; i += axisData.step) {
                 this.add(new Line(
-                    {
-                        x: axisName === 'x' ? i : (axisName === 'y' ? 0.1 : 0),
-                        y: axisName === 'y' ? i : (axisName === 'x' ? 0.1 : (axisName === 'z' ? 0.1 : 0)),
-                        z: axisName === 'z' ? i : 0
-                    },
-                    {
-                        x: axisName === 'x' ? i : (axisName === 'y' ? -0.1 : 0),
-                        y: axisName === 'y' ? i : (axisName === 'x' ? -0.1 : (axisName === 'z' ? -0.1 : 0)),
-                        z: axisName === 'z' ? i : 0
-                    },
+                    new Vector3(
+                        axisName === 'x' ? i : (axisName === 'y' ? 0.1 : 0),
+                        axisName === 'y' ? i : (axisName === 'x' ? 0.1 : (axisName === 'z' ? 0.1 : 0)),
+                        axisName === 'z' ? i : 0
+                    ),
+                    new Vector3(
+                        axisName === 'x' ? i : (axisName === 'y' ? -0.1 : 0),
+                        axisName === 'y' ? i : (axisName === 'x' ? -0.1 : (axisName === 'z' ? -0.1 : 0)),
+                        axisName === 'z' ? i : 0
+                    ),
                     axisData.color ?? colors.axis
                 ));
             }
@@ -131,16 +145,16 @@ export default class Axis extends Object3D {
                 axes.forEach((object) => {
                     if (i !== 0) {
                         this.add(new Line(
-                            {
-                                x: (object.name === 'x') ? object.axisData.from : (axis.name === 'x' ? i : 0),
-                                y: (object.name === 'y') ? object.axisData.from : (axis.name === 'y' ? i : 0),
-                                z: (object.name === 'z') ? object.axisData.from : (axis.name === 'z' ? i : 0),
-                            },
-                            {
-                                x: (object.name === 'x') ? object.axisData.to : (axis.name === 'x' ? i : 0),
-                                y: (object.name === 'y') ? object.axisData.to : (axis.name === 'y' ? i : 0),
-                                z: (object.name === 'z') ? object.axisData.to : (axis.name === 'z' ? i : 0),
-                            },
+                            new Vector3(
+                                (object.name === 'x') ? object.axisData.from : (axis.name === 'x' ? i : 0),
+                                (object.name === 'y') ? object.axisData.from : (axis.name === 'y' ? i : 0),
+                                (object.name === 'z') ? object.axisData.from : (axis.name === 'z' ? i : 0),
+                            ),
+                            new Vector3(
+                                (object.name === 'x') ? object.axisData.to : (axis.name === 'x' ? i : 0),
+                                (object.name === 'y') ? object.axisData.to : (axis.name === 'y' ? i : 0),
+                                (object.name === 'z') ? object.axisData.to : (axis.name === 'z' ? i : 0),
+                            ),
                             object.axisData.color ?? colors.plot
                         ));
                     }
