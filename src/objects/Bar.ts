@@ -9,7 +9,6 @@ export class BarGeometry extends BoxGeometry {
     }) {
         super(bar.width, bar.height, bar.depth);
         this.translate(0, this.bar.height / 2, 0); // should always start drawing from bottom center
-        return this;
     }
 }
 
@@ -21,7 +20,6 @@ export class BarMesh extends Mesh {
     ) {
         super(barGeometry, mesh);
         this.position.set(position.x, position.y, position.z);
-        return this;
     }
 }
 

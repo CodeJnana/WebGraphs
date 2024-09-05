@@ -21,28 +21,54 @@ export type axes = {
 export class Axis extends Object3D {
     constructor(
         public name: 'x' | 'y' | 'z',
-        from: number,
-        to: number,
-        color: ColorRepresentation = Colors.axis
+        public from: number,
+        public to: number,
+        public color: ColorRepresentation = Colors.axis
     ) {
         super();
-        this.add(new Line(
-            new Vector3(
-                (name === 'x') ? from : 0,
-                (name === 'y') ? from : 0,
-                (name === 'z') ? from : 0
+        this.add(new Line({
+            from: new Vector3(
+                (name === 'x') ? this.from : 0,
+                (name === 'y') ? this.from : 0,
+                (name === 'z') ? this.from : 0
             ),
-            new Vector3(
-                (name === 'x') ? to : 0,
-                (name === 'y') ? to : 0,
-                (name === 'z') ? to : 0
+            to: new Vector3(
+                (name === 'x') ? this.to : 0,
+                (name === 'y') ? this.to : 0,
+                (name === 'z') ? this.to : 0
             ),
-            color)
+            color
+        })
         );
     }
 }
 
+export class ParallelAxis extends Object3D {
+    constructor(
+        axis: Axis,
+        point: Vector3,
+        color: ColorRepresentation = Colors.plot
+    ) {
+        super();
+        this.add(new Line({
+            from: new Vector3(
+                (axis.name === 'x') ? axis.from : point.x,
+                (axis.name === 'y') ? axis.from : point.y,
+                (axis.name === 'z') ? axis.from : point.z
+            ),
+            to: new Vector3(
+                (axis.name === 'x') ? axis.to : point.x,
+                (axis.name === 'y') ? axis.to : point.y,
+                (axis.name === 'z') ? axis.to : point.z
+            ),
+            color
+        }));
+    }
+}
+
 export default class Graph extends Object3D {
+    private groupAxes: Axis[] = [];
+    
     constructor(
         private axes: axes,
         private outline: boolean = false
@@ -60,34 +86,31 @@ export default class Graph extends Object3D {
     }
 
     drawAxis(): void {
+        this.groupAxes = [];
         for (const axis of Object.keys(this.axes) as Array<'x' | 'y' | 'z'>) {
             const axisData = this.axes[axis] as axis;
-            axisData && this.add(new Axis(
-                axis,
-                axisData.from,
-                axisData.to,
-                axisData.color ?? Colors.axis
-            ));
+            axisData && this.groupAxes.push(new Axis(axis, axisData.from, axisData.to, axisData.color));
         }
+        this.add(...this.groupAxes);
     }
 
     drawStep(axisName: 'x' | 'y' | 'z'): Object3D | void {
         const axisData = this.axes[axisName] as axis;
         if (axisData && axisData.step !== undefined) {
             for (let i = axisData.from; i <= axisData.to; i += axisData.step) {
-                this.add(new Line(
-                    new Vector3(
+                this.add(new Line({
+                    from: new Vector3(
                         axisName === 'x' ? i : (axisName === 'y' ? 0.1 : 0),
                         axisName === 'y' ? i : (axisName === 'x' ? 0.1 : (axisName === 'z' ? 0.1 : 0)),
                         axisName === 'z' ? i : 0
                     ),
-                    new Vector3(
+                    to: new Vector3(
                         axisName === 'x' ? i : (axisName === 'y' ? -0.1 : 0),
                         axisName === 'y' ? i : (axisName === 'x' ? -0.1 : (axisName === 'z' ? -0.1 : 0)),
                         axisName === 'z' ? i : 0
                     ),
-                    axisData.color ?? Colors.axis
-                ));
+                    color: axisData.color ?? Colors.axis
+                }));
             }
         }
     }
@@ -101,10 +124,12 @@ export default class Graph extends Object3D {
                     const color = new Color(axisData.label === 'numeric' ? (axisData.lblColor ?? Colors.text) : (axisData.label[lblCount]?.color ?? Colors.text));
                     let label = axisData.label === 'numeric' ? i.toString() : (axisData.label[lblCount]?.name ?? '');
                     const text = new Label(
-                        new Vector3(0, 0, 0),
-                        label,
-                        0.15,
-                        color,
+                        {
+                            position: new Vector3(0, 0, 0),
+                            text: label,
+                            textSize: 0.15,
+                            color: color,
+                        }
                     );
 
                     const dimensions = new Box3().setFromObject(text).getSize(new Vector3());
@@ -147,19 +172,19 @@ export default class Graph extends Object3D {
             for (let i = axis.axisData.from; i <= axis.axisData.to; i += axis.axisData.step) {
                 axes.forEach((object) => {
                     if (i !== 0) {
-                        this.add(new Line(
-                            new Vector3(
+                        this.add(new Line({
+                            from: new Vector3(
                                 (object.name === 'x') ? object.axisData.from : (axis.name === 'x' ? i : 0),
                                 (object.name === 'y') ? object.axisData.from : (axis.name === 'y' ? i : 0),
                                 (object.name === 'z') ? object.axisData.from : (axis.name === 'z' ? i : 0),
                             ),
-                            new Vector3(
+                            to: new Vector3(
                                 (object.name === 'x') ? object.axisData.to : (axis.name === 'x' ? i : 0),
                                 (object.name === 'y') ? object.axisData.to : (axis.name === 'y' ? i : 0),
                                 (object.name === 'z') ? object.axisData.to : (axis.name === 'z' ? i : 0),
                             ),
-                            object.axisData.color ?? Colors.plot
-                        ));
+                            color: object.axisData.color ?? Colors.plot
+                        }));
                     }
                 });
             }
