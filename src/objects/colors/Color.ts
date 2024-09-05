@@ -1,6 +1,6 @@
 import { Color } from "three";
 import { colors } from "../../defaults";
-import Settings from "../../Settings";
+import Settings from "../../settings";
 
 type ColorObject = {
     [K in keyof typeof colors]: number | string | Color;
