@@ -6,12 +6,17 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "devDependencies": {
     "@types/three": "^0.167.2",
+    "happy-dom": "^15.7.3",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.5.3",
-    "vite": "^5.4.1"
+    "vite": "^5.4.3",
+    "vitest": "^2.0.5",
+    "vitest-canvas-mock": "^0.3.3"
   },
   "dependencies": {
     "three": "^0.167.1"

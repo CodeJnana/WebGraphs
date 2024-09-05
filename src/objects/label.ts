@@ -14,7 +14,7 @@ export interface LabelInterface {
 
 export class LabelGeometry extends TextGeometry {
     constructor(
-        text: string,
+        public text: string,
         size: number,
         depth = 0.01,
         height = 0.1,
