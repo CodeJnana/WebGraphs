@@ -25,7 +25,7 @@ export class LineMesh extends ThreeLine {
 }
 
 export default class Line extends Object3D {
-    private lineGeometry: LineGeometry;
+    public lineGeometry: LineGeometry;
     private lineMesh: LineMesh;
 
     constructor({
