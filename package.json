@@ -7,10 +7,12 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@types/three": "^0.167.2",
+    "@vitest/coverage-v8": "^2.0.5",
     "happy-dom": "^15.7.3",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.5.3",
