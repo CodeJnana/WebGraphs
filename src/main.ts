@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import './style.css';
+import Graph from './objects/Axis';
+import Bar from './objects/Bar';
 
 const canvas = document.createElement('canvas');
 canvas.width = 1200;
@@ -22,6 +24,14 @@ camera.position.set(10, 5, 15);
 controls.update();
 
 const scene = new THREE.Scene();
+
+const graph = new Graph({
+  x: { from: -10, to: 10, step: 1, label: 'numeric' },
+  y: { from: -10, to: 10, step: 1, label: 'numeric' },
+  z: { from: -10, to: 10, step: 1, label: 'numeric' },
+});
+
+scene.add(graph);
 
 scene.background = new THREE.Color(0xffffff);
 renderer.setPixelRatio(window.devicePixelRatio);
