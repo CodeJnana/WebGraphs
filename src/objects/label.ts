@@ -42,8 +42,8 @@ export class LabelMesh extends Mesh {
 }
 
 export default class Label extends Object3D {
-    private lblGeometry: LabelGeometry;
-    private lblMesh: LabelMesh;
+    public lblGeometry: LabelGeometry;
+    public lblMesh: LabelMesh;
 
     constructor({
         text,
