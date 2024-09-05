@@ -1,8 +1,9 @@
 import { Color, ColorRepresentation, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Vector3 } from 'three';
-import { TextGeometry } from "three/examples/jsm/Addons.js";
+import { Font, TextGeometry } from "three/examples/jsm/Addons.js";
+import helvetiker_regular from '../fonts/helvetiker_regular.typeface.json';
 import { Colors } from './colors/Color';
 
-declare const window: any;
+
 export interface LabelInterface {
     text: string;
     position: Vector3;
@@ -20,7 +21,7 @@ export class LabelGeometry extends TextGeometry {
         curveSegments = 12,
     ) {
         super(text, {
-            font: window.graph.font,
+            font: new Font(helvetiker_regular),
             size: size,
             depth,
             height,
