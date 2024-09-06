@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
-import './style.css';
 import Graph from './objects/Axis';
-import Bar from './objects/Bar';
+import './style.css';
 
 const canvas = document.createElement('canvas');
 canvas.width = 1200;
@@ -18,17 +17,20 @@ renderer.setSize(canvas.width, canvas.height);
 const camera = new THREE.PerspectiveCamera(45, 2, 1, 500);
 const controls = new OrbitControls(camera, renderer.domElement);
 // look at centre of the graph
-controls.target.set(10, 5, 0);
+controls.target.set(0, 0, 0);
 // set camera position
-camera.position.set(10, 5, 15);
+camera.position.set(10, 5, 35);
 controls.update();
 
 const scene = new THREE.Scene();
 
 const graph = new Graph({
-  x: { from: -10, to: 10, step: 1, label: 'numeric' },
-  y: { from: -10, to: 10, step: 1, label: 'numeric' },
-  z: { from: -10, to: 10, step: 1, label: 'numeric' },
+  axes: {
+    x: { from: -10, to: 10, step: 2, label: 'numeric' },
+    y: { from: -10, to: 10, step: 2, label: 'numeric' },
+    z: { from: -10, to: 10, step: 2, label: 'numeric' },
+  },
+  outline3D: true
 });
 
 scene.add(graph);
@@ -45,5 +47,9 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
+  // move camera is circle around the graph
+  camera.position.x = 35 * Math.sin(Date.now() * 0.0001);
+  camera.position.z = 35 * Math.cos(Date.now() * 0.0001);
+  camera.lookAt(0, 0, 0);
 }
 animate();
