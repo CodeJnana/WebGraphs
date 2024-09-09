@@ -1,4 +1,5 @@
 import { BoxGeometry, Color, ColorRepresentation, EdgesGeometry, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Vector3 } from 'three';
+import { HoverActions } from '../effect/CustomAction';
 import { Colors } from './colors/Color';
 
 export class BarGeometry extends BoxGeometry {
@@ -12,7 +13,7 @@ export class BarGeometry extends BoxGeometry {
     }
 }
 
-export class BarMesh extends Mesh {
+export class BarMesh extends Mesh implements HoverActions {
     constructor(
         barGeometry: BarGeometry,
         mesh: MeshBasicMaterial | MeshPhongMaterial,
@@ -20,6 +21,18 @@ export class BarMesh extends Mesh {
     ) {
         super(barGeometry, mesh);
         this.position.set(position.x, position.y, position.z);
+    }
+
+    hoverIn = () => {
+        const material = this.material as MeshPhongMaterial;
+        material.transparent = true;
+        material.opacity = 0.2;
+    }
+
+    hoverOut = () => {
+        const material = this.material as MeshPhongMaterial;
+        material.transparent = false;
+        material.opacity = 1;
     }
 }
 
@@ -41,7 +54,7 @@ export default class Bar extends Object3D {
         private borders: boolean = false,
         private borderColor: ColorRepresentation = Colors.barBorder,
         private borderThickness: number = 2,
-        private barMaterial: MeshPhongMaterial | MeshBasicMaterial = new MeshPhongMaterial({ shininess: 150, transparent: true, opacity: 0.2 }),
+        private barMaterial: MeshPhongMaterial | MeshBasicMaterial = new MeshPhongMaterial({ shininess: 150, transparent: true, opacity: 1 }),
     ) {
         super();
         this.barMaterial.color = new Color(this.color);
