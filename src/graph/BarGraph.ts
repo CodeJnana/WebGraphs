@@ -1,7 +1,5 @@
 import { Group, Scene, Vector3 } from "three";
-import Axis from "../objects/Axis";
 import Bar from "../objects/Bar";
-import { Colors } from "../objects/colors/Color";
 
 export type BarGraphOptions = {
     labels?: string[];
@@ -66,22 +64,22 @@ export default class BarGraph extends Group {
     }
 
     drawAxis() {
-        const axis = new Axis({
-            x: {
-                from: 0,
-                to: this.options.labels?.length ?? 0,
-                step: 1,
-                label: this.options.labels?.map(label => ({ name: label, color: Colors.axis })) ?? [],
-                labelCenter: true
-            },
-            y: {
-                from: this.lowestYAxisValue / 10,
-                to: this.highestYAxisValue / 10,
-                step: 1,
-                label: 'numeric'
-            },
-        }, true);
-        this.scene.add(axis);
+        // const axis = new Axis({
+        //     x: {
+        //         from: 0,
+        //         to: this.options.labels?.length ?? 0,
+        //         step: 1,
+        //         label: this.options.labels?.map(label => ({ name: label, color: Colors.axis })) ?? [],
+        //         labelCenter: true
+        //     },
+        //     y: {
+        //         from: this.lowestYAxisValue / 10,
+        //         to: this.highestYAxisValue / 10,
+        //         step: 1,
+        //         label: 'numeric'
+        //     },
+        // }, true);
+        // this.scene.add(axis);
     }
 
     drawBars() {
