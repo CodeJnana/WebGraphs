@@ -1,15 +1,35 @@
 import { BoxGeometry, Color, ColorRepresentation, EdgesGeometry, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Vector3 } from 'three';
 import { HoverActions } from '../effect/CustomAction';
 import { Colors } from './colors/Color';
+import { ax } from 'vitest/dist/chunks/reporters.DAfKSDh5.js';
+
+type barType = '+y' | '-y' | '+x' | '-x' | '+z' | '-z';
 
 export class BarGeometry extends BoxGeometry {
     constructor(private bar: {
         width: number;
         height: number;
         depth: number;
+        barType?: barType;
     }) {
         super(bar.width, bar.height, bar.depth);
-        this.translate(0, this.bar.height / 2, 0); // should always start drawing from bottom center
+        switch (bar.barType) {
+            case '+y':
+                this.translate(0, this.bar.height / 2, 0);
+                break;
+            case '-y':
+                this.translate(0, -this.bar.height / 2, 0);
+                break;
+            case '+x':
+                this.rotateZ(Math.PI / 2);
+                this.translate(this.bar.width, 0, 0);
+                break;
+            case '-x':
+                this.rotateZ(Math.PI / 2);
+                this.translate(-this.bar.width, 0, 0);
+                break;
+            default:
+        }
     }
 }
 
@@ -48,6 +68,7 @@ export default class Bar extends Object3D {
             width: number;
             height: number;
             depth: number;
+            barType?: barType;
         },
         position: Vector3,
         private color: ColorRepresentation = Colors.bar,
@@ -77,10 +98,27 @@ export default class Bar extends Object3D {
     }
 
     rotate(
-        axis: 'x' | 'y' | 'z' = 'y',
         rotationSpeed: number = 0.01,
         clockwise: boolean = true
     ) {
+        requestAnimationFrame(() => this.rotate(rotationSpeed, clockwise));
+        let axis: 'x' | 'y' | 'z' | undefined;
+        switch (this.dimensions.barType) {
+            case '+y':
+                axis = 'y';
+                break;
+            case '-y':
+                axis = 'y';
+                break;
+            case '+x':
+                axis = 'x';
+                break;
+            case '-x':
+                axis = 'x';
+                break;
+            default:
+        }
+        if (axis === undefined) return;
         if (clockwise) {
             this.barBorderMesh.rotation[axis] += rotationSpeed;
             this.barMesh.rotation[axis] += rotationSpeed;
@@ -88,19 +126,5 @@ export default class Bar extends Object3D {
             this.barBorderMesh.rotation[axis] -= rotationSpeed;
             this.barMesh.rotation[axis] = rotationSpeed;
         }
-    }
-
-    scaleHeight(speed: number = this.dimensions.height / 10): boolean {
-        if (this.growthHeight < this.dimensions.height) {
-            this.barMesh.geometry = new BarGeometry({ width: this.dimensions.width, height: this.growthHeight, depth: this.dimensions.depth });
-            this.growthHeight += speed;
-            if (this.growthHeight > this.dimensions.height) {
-                this.growthHeight = this.dimensions.height;
-            }
-            const geometry = new EdgesGeometry(this.barMesh.geometry);
-            this.barBorderMesh.geometry = geometry;
-            return false;
-        }
-        return true;
     }
 }
