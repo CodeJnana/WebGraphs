@@ -11,5 +11,5 @@ test('Line is working', () => {
     });
 
     expect(line).toBeTruthy();
-    expect(line.lineGeometry.getAttribute('position').count).toStrictEqual(2);
+    expect(line.geometry.getAttribute('position').count).toStrictEqual(2);
 })

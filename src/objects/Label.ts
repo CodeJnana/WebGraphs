@@ -32,30 +32,30 @@ export class LabelGeometry extends TextGeometry {
 
 export class LabelMesh extends Mesh {
     constructor(
-        lblGeometry: LabelGeometry,
+        geometry: LabelGeometry,
         material: MeshBasicMaterial | MeshPhongMaterial,
         position: Vector3
     ) {
-        super(lblGeometry, material);
+        super(geometry, material);
         this.position.set(position.x, position.y, position.z);
     }
 }
 
 export default class Label extends Object3D {
-    public lblGeometry: LabelGeometry;
-    public lblMesh: LabelMesh;
+    public geometry: LabelGeometry;
+    public mesh: LabelMesh;
 
     constructor({
         text,
         position,
         textSize = 0.15,
         color = Colors.text,
-        material = new MeshPhongMaterial()
+        material = new MeshBasicMaterial()
     }: LabelInterface) {
         super();
         material.color = new Color(color);
-        this.lblGeometry = new LabelGeometry(text, textSize);
-        this.lblMesh = new LabelMesh(this.lblGeometry, material, position);
-        this.add(this.lblMesh);
+        this.geometry = new LabelGeometry(text, textSize);
+        this.mesh = new LabelMesh(this.geometry, material, position);
+        this.add(this.mesh);
     }
 }

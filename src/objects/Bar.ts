@@ -1,7 +1,6 @@
 import { BoxGeometry, Color, ColorRepresentation, EdgesGeometry, LineBasicMaterial, LineSegments, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Vector3 } from 'three';
 import { HoverActions } from '../effect/CustomAction';
 import { Colors } from './colors/Color';
-import { ax } from 'vitest/dist/chunks/reporters.DAfKSDh5.js';
 
 type barType = '+y' | '-y' | '+x' | '-x' | '+z' | '-z';
 
@@ -61,8 +60,6 @@ export default class Bar extends Object3D {
     public barMesh: BarMesh;
     private barBorderMesh: LineSegments = new LineSegments();
 
-    private growthHeight: number = 0;
-
     constructor(
         private dimensions: {
             width: number;
@@ -73,7 +70,7 @@ export default class Bar extends Object3D {
         position: Vector3,
         private color: ColorRepresentation = Colors.bar,
         private borders: boolean = false,
-        private borderColor: ColorRepresentation = Colors.barBorder,
+        private borderColor: ColorRepresentation = Colors.border,
         private borderThickness: number = 2,
         private barMaterial: MeshPhongMaterial | MeshBasicMaterial = new MeshPhongMaterial({ shininess: 150, transparent: true, opacity: 1 }),
     ) {

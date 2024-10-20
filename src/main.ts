@@ -1,96 +1,83 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
-import Graph from './objects/Axis';
+import Axis from './objects/Axes/Axis';
+import Label from './objects/Axes/Label';
+import { Colors } from './objects/colors/Color';
+import Settings from './settings';
 import './style.css';
-import Bar from './objects/Bar';
-import HoverActions from './effect/HoverObject';
+
+let height: number | undefined;
+let width: number | undefined;
+
+Settings.MODE = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 
 
+height = document.getElementById('app')?.clientHeight;
+width = document.getElementById('app')?.clientWidth;
+if (!height || !width) {
+  throw new Error('Height or width not found');
+}
 const renderer = new THREE.WebGLRenderer({
   antialias: true
 });
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(width, height);
 document.getElementById('app')?.appendChild(renderer.domElement);
 
-const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.25, 100);
+const camera = new THREE.PerspectiveCamera(45, width / height, 0.25, 375);
 const controls = new OrbitControls(camera, renderer.domElement);
 // look at centre of the graph
-controls.target.set(0, 0, 0);
+controls.target.set(0, 10, 0);
 // set camera position
-camera.position.set(10, 10, 20);
+camera.position.set(150, 100, 200);
 controls.update();
 
 const scene = new THREE.Scene();
 
-const graph = new Graph({
-  axes: {
-    x: { from: -10, to: 10, step: 2, label: 'numeric' },
-    y: { from: -10, to: 10, step: 2, label: 'numeric' },
-    z: { from: -10, to: 10, step: 2, label: 'numeric' },
-  }
-});
+const aXisX = new Axis('x', -105, 105, 10);
+aXisX.drawOnCoordinates(
+  new Label([
+    { name: 'London', distanceFromAxis: -2.5 },
+    { name: 'Paris' },
+    { name: `New\nYork` },
+    { name: 'Tokyo' },
+    { name: 'Sydney' },
+    { name: 'Berlin' },
+    { name: 'Rome' },
+    { name: 'Moscow' },
+    { name: 'Cairo' },
+    { name: `Cape\nTown` },
+    { name: `Rio\nde\nJaneiro` },
+    { name: `Buenos\nAires` },
+    { name: 'Lima', distanceFromAxis: -2.5 },
+    { name: `Mexico\nCity` },
+    { name: `Los\nAngeles` },
+    { name: 'Toronto' },
+    { name: 'Vancouver', distanceFromAxis: -2.5 },
+    { name: 'Anchorage' },
+    { name: 'Honolulu' },
+    { name: 'Auckland' },
+    { name: 'Hong Kong' },
+    { name: 'Singapore' },
+    { name: 'Dubai' },
+    { name: 'Mumbai' }
+  ], Colors.text, 1.3, true, 2.5)
+);
+scene.add(aXisX);
 
-const bar = new Bar({
-  width: 1,
-  height: 2,
-  depth: 1,
-  barType: '+y'
-}, new THREE.Vector3(2, 0, 0), 0x00ff00, false, 0x000000, 2);
-scene.add(bar);
+const numbericLabel = new Label(1);
+const aXisY = new Axis('y', -105, 105, 10);
+aXisY.drawOnCoordinates(numbericLabel);
+scene.add(aXisY);
 
-const bar2 = new Bar({
-  width: 1,
-  height: 2,
-  depth: 1,
-  barType: '+y'
-}, new THREE.Vector3(4, 0, 0), 0x00ff00, false, 0x000000, 2);
-bar2.rotate();
-scene.add(bar2);
-
-const bar3 = new Bar({
-  width: 1,
-  height: 2,
-  depth: 1,
-  barType: '+x'
-}, new THREE.Vector3(0, 4, 0), 0x00ff00, false, 0x000000, 2);
-scene.add(bar3);
-
-const bar4 = new Bar({
-  width: 1,
-  height: 2,
-  depth: 1,
-  barType: '-x'
-}, new THREE.Vector3(0, 6, 0), 0x00ff00, false, 0x000000, 2);
-scene.add(bar4);
-
-HoverActions(renderer, camera, scene);
-
-function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
-window.addEventListener('resize', onWindowResize, false);
-onWindowResize();
+const numbericLabel2 = new Label(1, Colors.text, 1.3, false, 2.5, 0);
+const aXisZ = new Axis('z', -105, 105, 10);
+aXisZ.drawOnCoordinates(numbericLabel2);
+scene.add(aXisZ);
 
 
-scene.add(graph);
-
-scene.background = new THREE.Color(0xffffff);
+scene.background = new THREE.Color(Colors.scene);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.render(scene, camera);
 
-// lights
-const light = new THREE.AmbientLight(0xffffff, 3);
-light.position.set(0, 5, 5);
-scene.add(light);
-function animate() {
-  requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
-  // bar4.rotate();
-}
-animate();
+

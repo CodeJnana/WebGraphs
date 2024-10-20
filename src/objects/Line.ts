@@ -8,7 +8,7 @@ export interface LineInterface {
     material?: LineBasicMaterial;
 }
 
-export class LineGeometry extends BufferGeometry {
+export class geometry extends BufferGeometry {
     constructor(...points: Vector3[]) {
         super();
         this.setFromPoints(points);
@@ -17,16 +17,16 @@ export class LineGeometry extends BufferGeometry {
 
 export class LineMesh extends ThreeLine {
     constructor(
-        lineGeometry: LineGeometry,
+        geometry: geometry,
         material: LineBasicMaterial
     ) {
-        super(lineGeometry, material);
+        super(geometry, material);
     }
 }
 
 export default class Line extends Object3D {
-    public lineGeometry: LineGeometry;
-    private lineMesh: LineMesh;
+    public geometry: geometry;
+    public mesh: LineMesh;
 
     constructor({
         from,
@@ -36,8 +36,8 @@ export default class Line extends Object3D {
     }: LineInterface) {
         super();
         material.color = new Color(color);
-        this.lineGeometry = new LineGeometry(from, to);
-        this.lineMesh = new LineMesh(this.lineGeometry, material);
-        this.add(this.lineMesh);
+        this.geometry = new geometry(from, to);
+        this.mesh = new LineMesh(this.geometry, material);
+        this.add(this.mesh);
     }
 }
