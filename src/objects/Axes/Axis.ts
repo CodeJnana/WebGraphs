@@ -1,140 +1,144 @@
-import { ColorRepresentation, Object3D, Vector3 } from 'three';
+import { ColorRepresentation, Vector3 } from 'three';
 import Line from '../Line';
 import { Colors } from '../colors/Color';
 import DrawOnAxisCoordinatesInterface from './DrawOnAxisCoordinatesInterface';
 
-export default class Axis extends Object3D {
-    private negativeCoordinates: Array<{
-        origin?: boolean,
-        vector: Vector3
-    }> = []; // start from `zero` to `from` value
+export type AxisType = {
+    name: 'x' | 'y' | 'z',
+    from: number,
+    to: number,
+    coordinateDistance: number,
+    drawBetweenCoordinates: boolean,
+    color: ColorRepresentation,
+    slitSize: number,
+    slitColor: ColorRepresentation
+}
 
-    private positiveCoordinates: Array<{
-        origin?: boolean,
-        vector: Vector3
-    }> = []; // starts from `zero` to `to` value
-
-    public coordinates: Array<{
-        origin?: boolean,
-        vector: Vector3
-    }> = []; // starts `from` from to `to` value
+export default class Axis extends Line {
+    public coordinates: Array<{ vector: Vector3 }> = []; // starts `from` from to `to` value
 
     constructor(
-        public readonly name: 'x' | 'y' | 'z',
-        public readonly from: number,
-        public readonly to: number,
-        public readonly coordinateDistance: number,
-        public readonly color: ColorRepresentation = Colors.line,
-        public readonly slitColor: ColorRepresentation = Colors.line
-    ) {
-        super();
-
-        if (this.from > 0 || this.to < 0 || (this.from == 0 && this.to == 0)) {
-            throw new Error('Invalid axis range');
+        public readonly props: AxisType = {
+            name: 'x',
+            from: 100,
+            to: 100,
+            coordinateDistance: 10,
+            drawBetweenCoordinates: false,
+            color: Colors.line,
+            slitSize: .75,
+            slitColor: Colors.line,
         }
-        this.add(new Line({
+    ) {
+        super({
             from: new Vector3(
-                (name === 'x') ? this.from : 0,
-                (name === 'y') ? this.from : 0,
-                (name === 'z') ? this.from : 0
+                (props.name === 'x') ? props.from : 0,
+                (props.name === 'y') ? props.from : 0,
+                (props.name === 'z') ? props.from : 0
             ),
             to: new Vector3(
-                (name === 'x') ? this.to : 0,
-                (name === 'y') ? this.to : 0,
-                (name === 'z') ? this.to : 0
+                (props.name === 'x') ? props.to : 0,
+                (props.name === 'y') ? props.to : 0,
+                (props.name === 'z') ? props.to : 0
             ),
-            color: this.color
-        }));
-        this.calculateCoordinates();
+            color: props.color
+        });
 
-        this.drawSlits();
+        if (this.props.from > 0 || this.props.to < 0 || (this.props.from == 0 && this.props.to == 0)) {
+            throw new Error('Invalid axis range');
+        }
+
+        this.calculateCoordinates();
     }
 
     calculateCoordinates() {
-        if (!this.coordinateDistance) return;
-        if (this.coordinateDistance <= 0) return;
-
-        const centerPoint = 0;
-        for (let i = centerPoint; i >= this.from; i -= this.coordinateDistance) {
-            this.negativeCoordinates.push({
-                vector: new Vector3(
-                    (this.name === 'x') ? i : 0,
-                    (this.name === 'y') ? i : 0,
-                    (this.name === 'z') ? i : 0
-                ),
-                origin: i === 0
-            });
+        if (this.props.coordinateDistance <= 0) {
+            throw new Error('Invalid coordinate distance');
         }
 
-        for (let i = centerPoint; i <= this.to; i += this.coordinateDistance) {
-            this.positiveCoordinates.push({
-                vector: new Vector3(
-                    (this.name === 'x') ? i : 0,
-                    (this.name === 'y') ? i : 0,
-                    (this.name === 'z') ? i : 0
-                ),
-                origin: i === 0
-            });
-        }
+        for (let i = -this.props.coordinateDistance; i >= this.props.from; i -= this.props.coordinateDistance) {
+            this.drawSlit(this.props.name, i);
 
-        if (this.negativeCoordinates.length > 0 && this.positiveCoordinates.length > 0) {
-            this.negativeCoordinates.shift();
-        }
-
-        this.coordinates = [...this.negativeCoordinates.reverse(), ...this.positiveCoordinates];
-    }
-
-    drawSlits() {
-        const slitSize = .75;
-        this.coordinates.forEach((coordinate) => {
-            // ignore origin
-            if (coordinate.origin) return;
-            let number = coordinate.vector[this.name];
-            let slitPoints = {
-                from: new Vector3(0, 0, 0),
-                to: new Vector3(0, 0, 0)
-            };
-            switch (this.name) {
-                case 'x':
-                    slitPoints = {
-                        from: new Vector3(number, slitSize, 0),
-                        to: new Vector3(number, -slitSize, 0)
-                    };
-                    break;
-                case 'y':
-                    slitPoints = {
-                        from: new Vector3(slitSize, number, 0),
-                        to: new Vector3(-slitSize, number, 0)
-                    };
-                    break;
-                case 'z':
-                    slitPoints = {
-                        from: new Vector3(0, slitSize, number),
-                        to: new Vector3(0, -slitSize, number)
-                    };
-                    break;
+            let point = i;
+            if (this.props.drawBetweenCoordinates) {
+                point = i + this.props.coordinateDistance / 2;
             }
+            const vector = new Vector3(
+                (this.props.name === 'x') ? point : 0,
+                (this.props.name === 'y') ? point : 0,
+                (this.props.name === 'z') ? point : 0
+            );
+            this.coordinates.push({ vector });
+        }
 
-            const line = new Line({
-                from: slitPoints['from'],
-                to: slitPoints['to'],
-                color: this.slitColor ?? this.color
-            });
-            line.mesh.renderOrder = 1;
-            this.add(line);
-        });
+        this.coordinates.push({ vector: new Vector3(0, 0, 0) });
+
+        for (let i = this.props.coordinateDistance; i <= this.props.to; i += this.props.coordinateDistance) {
+            this.drawSlit(this.props.name, i);
+
+            let point = i;
+            if (this.props.drawBetweenCoordinates) {
+                point = i - this.props.coordinateDistance / 2;
+            }
+            const vector = new Vector3(
+                (this.props.name === 'x') ? point : 0,
+                (this.props.name === 'y') ? point : 0,
+                (this.props.name === 'z') ? point : 0
+            );
+            this.coordinates.push({ vector });
+        }
+        this.drawPoints = this.coordinates;
     }
 
-    drawParallelAxis(pAxis: Axis[], color: ColorRepresentation = this.color) {
+    drawSlit(name: 'x' | 'y' | 'z', point: number) {
+        if (point === 0 || this.props.slitSize <= 0) {
+            return; // Ignore origin
+        }
+
+        const slitPoints = {
+            from: new Vector3(0, 0, 0),
+            to: new Vector3(0, 0, 0)
+        };
+
+        switch (name) {
+            case 'x':
+                slitPoints.from.x = point;
+                slitPoints.from.y = this.props.slitSize;
+                slitPoints.to.x = point;
+                slitPoints.to.y = -this.props.slitSize;
+                break;
+            case 'y':
+                slitPoints.from.x = this.props.slitSize;
+                slitPoints.from.y = point;
+                slitPoints.to.x = -this.props.slitSize;
+                slitPoints.to.y = point;
+                break;
+            case 'z':
+                slitPoints.from.y = this.props.slitSize;
+                slitPoints.from.z = point;
+                slitPoints.to.y = -this.props.slitSize;
+                slitPoints.to.z = point;
+                break;
+        }
+
+        const line = new Line({
+            from: slitPoints.from,
+            to: slitPoints.to,
+            color: this.props.slitColor ?? this.props.color
+        });
+        line.mesh.renderOrder = 1;
+        this.add(line);
+    }
+
+    drawParallelAxis(pAxis: Axis[], color: ColorRepresentation = this.props.color) {
         pAxis.forEach((axis) => {
-            if (axis.name.includes(this.name)) {
+            if (axis.name.includes(this.props.name)) {
                 throw new Error('Invalid parallel axis');
             }
         });
         pAxis.forEach((axis) => {
-            this.coordinates.forEach((point) => {
+            this.drawFunctions.push((point: { vector: Vector3 }) => {
                 // ignore origin
-                if (point.origin) return;
+                if (point.vector.equals(new Vector3(0, 0, 0))) return;
                 const parallelPoints = this.getParallelAxisPoints(point.vector, axis);
                 const line = new Line({
                     from: parallelPoints.from,
@@ -148,23 +152,47 @@ export default class Axis extends Object3D {
     }
 
     private getParallelAxisPoints(point: Vector3, axis: Axis): { from: Vector3, to: Vector3 } {
+        let adjuster = 0;
+        if (this.props.drawBetweenCoordinates) {
+            switch (this.props.name) {
+                case 'x':
+                    point.x < 0 && (adjuster = -this.props.coordinateDistance / 2);
+                    point.x > 0 && (adjuster = this.props.coordinateDistance / 2);
+                    break;
+                case 'y':
+                    point.y < 0 && (adjuster = -this.props.coordinateDistance / 2);
+                    point.y > 0 && (adjuster = this.props.coordinateDistance / 2);
+                    break;
+                case 'z':
+                    point.z < 0 && (adjuster = -this.props.coordinateDistance / 2);
+                    point.z > 0 && (adjuster = this.props.coordinateDistance / 2);
+                    break;
+            }
+        }
+
         return {
             from: new Vector3(
-                (axis.name === 'x') ? axis.from : (this.name === 'x' ? point.x : 0),
-                (axis.name === 'y') ? axis.from : (this.name === 'y' ? point.y : 0),
-                (axis.name === 'z') ? axis.from : (this.name === 'z' ? point.z : 0),
+                (axis.name === 'x') ? axis.props.from : (this.props.name === 'x' ? point.x + adjuster : 0),
+                (axis.name === 'y') ? axis.props.from : (this.props.name === 'y' ? point.y + adjuster : 0),
+                (axis.name === 'z') ? axis.props.from : (this.props.name === 'z' ? point.z + adjuster : 0),
             ),
             to: new Vector3(
-                (axis.name === 'x') ? axis.to : (this.name === 'x' ? point.x : 0),
-                (axis.name === 'y') ? axis.to : (this.name === 'y' ? point.y : 0),
-                (axis.name === 'z') ? axis.to : (this.name === 'z' ? point.z : 0),
+                (axis.name === 'x') ? axis.props.to : (this.props.name === 'x' ? point.x + adjuster : 0),
+                (axis.name === 'y') ? axis.props.to : (this.props.name === 'y' ? point.y + adjuster : 0),
+                (axis.name === 'z') ? axis.props.to : (this.props.name === 'z' ? point.z + adjuster : 0),
             )
         }
     }
 
     public drawOnCoordinates(object: DrawOnAxisCoordinatesInterface) {
-        this.coordinates.forEach((point, index) => {
-            object.drawOnCoordinate(this, point, index);
+        this.drawFunctions.push((point: {
+            origin?: boolean,
+            vector: Vector3
+        }, index: number) => {
+            const object3D = object.drawOnCoordinate(this, point, index);
+            if (object3D) {
+                this.add(object3D);
+            }
         });
     }
 }

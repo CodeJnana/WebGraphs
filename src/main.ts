@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/Addons.js';
 import Axis from './objects/Axes/Axis';
-import Label from './objects/Axes/Label';
+import Label, { TurnLabel } from './objects/Axes/AxisLabel';
 import { Colors } from './objects/colors/Color';
+import WebGraphsScene from './objects/WebgraphsScene';
 import Settings from './settings';
 import './style.css';
 
@@ -32,12 +33,21 @@ controls.target.set(0, 10, 0);
 camera.position.set(150, 100, 200);
 controls.update();
 
-const scene = new THREE.Scene();
+const scene = new WebGraphsScene();
 
-const aXisX = new Axis('x', -105, 105, 10);
-aXisX.drawOnCoordinates(
-  new Label([
-    { name: 'London', distanceFromAxis: -2.5 },
+const aXisX = new Axis({
+  name: 'x',
+  from: -100,
+  to: 100,
+  coordinateDistance: 10,
+  drawBetweenCoordinates: true,
+  color: Colors.line,
+  slitSize: .75,
+  slitColor: Colors.line
+});
+const label = new Label({
+  type: [
+    { name: 'London' },
     { name: 'Paris' },
     { name: `New\nYork` },
     { name: 'Tokyo' },
@@ -47,13 +57,14 @@ aXisX.drawOnCoordinates(
     { name: 'Moscow' },
     { name: 'Cairo' },
     { name: `Cape\nTown` },
+    { name: `0` },
     { name: `Rio\nde\nJaneiro` },
     { name: `Buenos\nAires` },
-    { name: 'Lima', distanceFromAxis: -2.5 },
+    { name: 'Lima' },
     { name: `Mexico\nCity` },
     { name: `Los\nAngeles` },
-    { name: 'Toronto' },
-    { name: 'Vancouver', distanceFromAxis: -2.5 },
+    { name: '.' },
+    { name: 'Vancouver' },
     { name: 'Anchorage' },
     { name: 'Honolulu' },
     { name: 'Auckland' },
@@ -61,23 +72,72 @@ aXisX.drawOnCoordinates(
     { name: 'Singapore' },
     { name: 'Dubai' },
     { name: 'Mumbai' }
-  ], Colors.text, 1.3, true, 2.5)
-);
-scene.add(aXisX);
+  ],
+  color: Colors.text,
+  fontSize: 1.3,
+  shift: { type: 'y', distance: -1.5 },
+  ypr: {
+    yaw: 0,
+    pitch: 0,
+    roll: TurnLabel.ONE
+  }
+});
+aXisX.drawOnCoordinates(label);
 
-const numbericLabel = new Label(1);
-const aXisY = new Axis('y', -105, 105, 10);
+const numbericLabel = new Label({
+  type: 1,
+  color: Colors.text,
+  fontSize: 1.3,
+  shift: [
+    { type: 'x', distance: -1.5 },
+    { type: 'y', distance: 0.5 }
+  ]
+});
+const aXisY = new Axis({
+  name: 'y',
+  from: -100,
+  to: 100,
+  coordinateDistance: 10,
+  drawBetweenCoordinates: false,
+  color: Colors.line,
+  slitSize: .75,
+  slitColor: Colors.line
+});
 aXisY.drawOnCoordinates(numbericLabel);
-scene.add(aXisY);
 
-const numbericLabel2 = new Label(1, Colors.text, 1.3, false, 2.5, 0);
-const aXisZ = new Axis('z', -105, 105, 10);
+const numbericLabel2 = new Label({
+  type: 1,
+  color: Colors.text,
+  fontSize: 1.3,
+  shift: { type: 'y', distance: -2.5 }
+});
+const aXisZ = new Axis({
+  name: 'z',
+  from: -100,
+  to: 100,
+  coordinateDistance: 10,
+  drawBetweenCoordinates: false,
+  color: Colors.line,
+  slitSize: .75,
+  slitColor: Colors.line
+});
 aXisZ.drawOnCoordinates(numbericLabel2);
-scene.add(aXisZ);
+
+scene.add(aXisX, aXisY, aXisZ);
 
 
 scene.background = new THREE.Color(Colors.scene);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.render(scene, camera);
 
+function animate() {
 
+  requestAnimationFrame(animate);
+
+  // required if controls.enableDamping or controls.autoRotate are set to true
+  controls.update();
+
+  renderer.render(scene, camera);
+
+}
+animate();

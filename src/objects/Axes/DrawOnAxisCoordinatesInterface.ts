@@ -1,4 +1,4 @@
-import { Vector3 } from "three";
+import { Object3D, Vector3 } from "three";
 import Axis from "./Axis";
 
 export default interface DrawOnAxisCoordinatesInterface {
@@ -9,5 +9,5 @@ export default interface DrawOnAxisCoordinatesInterface {
             origin?: boolean
         },
         index: number
-    ): void;
+    ): Object3D | undefined;
 }

@@ -1,5 +1,6 @@
-import { BufferGeometry, Color, ColorRepresentation, LineBasicMaterial, Object3D, Line as ThreeLine, Vector3 } from 'three';
+import { BufferGeometry, Color, ColorRepresentation, LineBasicMaterial, Line as ThreeLine, Vector3 } from 'three';
 import { Colors } from './colors/Color';
+import WebGraphsObject3D from './WebGraphsObject3D';
 
 export interface LineInterface {
     from: Vector3;
@@ -24,7 +25,7 @@ export class LineMesh extends ThreeLine {
     }
 }
 
-export default class Line extends Object3D {
+export default class Line extends WebGraphsObject3D {
     public geometry: geometry;
     public mesh: LineMesh;
 
