@@ -52,22 +52,20 @@ export default class AxisLabel implements DrawOnAxisCoordinatesInterface {
     ) {
     }
 
-    drawOnCoordinate(
+    draw(
         axis: Axis,
-        point: {
-            vector: Vector3
-        },
+        point: Vector3,
         index: number
     ) {
         // ignore origin
-        if (point.vector.x === 0 && point.vector.y === 0 && point.vector.z === 0) {
+        if (point.x === 0 && point.y === 0 && point.z === 0) {
             return;
         }
-        let coordinatePoint = point.vector[axis.props.name];
+        let coordinatePoint = point[axis.props.name];
 
         this.setLabel(coordinatePoint, index);
 
-        this.text.setPosition(point.vector, this.props.shift);
+        this.text.setPosition(point, this.props.shift);
 
         if (this.props.ypr) {
             // TODO adjust distance from axis

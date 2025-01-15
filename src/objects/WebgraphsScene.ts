@@ -1,16 +1,13 @@
 import { Scene } from "three";
+import WebGraphsObject3D from "./WebGraphsObject3D";
 
 export default class WebGraphsScene extends Scene {
     constructor() {
         super();
     }
 
-    add(...objects: any[]) {
-        objects.forEach((object) => {
-            if (object.draw) {
-                object.draw();
-            }
-        });
+    add(...objects: WebGraphsObject3D[]) {
+        objects.forEach(object => object.beforeSceneAdd());
         return super.add(...objects);
     }
 }

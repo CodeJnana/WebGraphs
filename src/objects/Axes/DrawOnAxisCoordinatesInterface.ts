@@ -2,12 +2,9 @@ import { Object3D, Vector3 } from "three";
 import Axis from "./Axis";
 
 export default interface DrawOnAxisCoordinatesInterface {
-    drawOnCoordinate(
+    draw(
         axis: Axis,
-        point: {
-            vector: Vector3,
-            origin?: boolean
-        },
+        point: Vector3,
         index: number
     ): Object3D | undefined;
 }

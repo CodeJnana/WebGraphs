@@ -123,8 +123,11 @@ const aXisZ = new Axis({
 });
 aXisZ.drawOnCoordinates(numbericLabel2);
 
-scene.add(aXisX, aXisY, aXisZ);
+// aXisX.drawParallelAxis([aXisY, aXisZ]);
+// aXisY.drawParallelAxis([aXisX, aXisZ]);
+// aXisZ.drawParallelAxis([aXisX, aXisY]);
 
+scene.add(aXisX, aXisY, aXisZ);
 
 scene.background = new THREE.Color(Colors.scene);
 renderer.setPixelRatio(window.devicePixelRatio);
